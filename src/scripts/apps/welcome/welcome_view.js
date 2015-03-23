@@ -12,6 +12,7 @@ define(["app"], function(GeneralAssemblyApp) {
         "submit form#bill-search": "showBill"
       },
       showBill: function(e) {
+        console.log('show bills');
         e.preventDefault();
         e.stopPropagation();
         var doctype = $("#document-type").val();
@@ -28,21 +29,24 @@ define(["app"], function(GeneralAssemblyApp) {
         e.stopPropagation();
         GeneralAssemblyApp.trigger("members:list");
       },
-      onShow: function() {
+      onRender: function() {
         var feed = new google.feeds.Feed("http://www.myajc.com/list/rss/news/state-regional-govt-politics/georgia-politics-news/aKdb/");
         feed.setNumEntries(3);
-        feed.setResultFormat(google.feeds.Feed.XML_FORMAT);
-        // feed.setResultFormat(google.feeds.Feed.JSON_FORMAT);
+        // feed.setResultFormat(google.feeds.Feed.XML_FORMAT);
+        feed.setResultFormat(google.feeds.Feed.JSON_FORMAT);
         feed.load(function(result) {
           if (!result.error) {
             var container = $("#news-feeds");
             if (container[0].children.length === 0) {
-              var xml = result.xmlDocument;
-              var links = $(xml).find('link');
-              var titles = $(xml).find('title');
-              for (var i = 1; i <= 3; i++) {
-                container.append('<p><a class="news-link" href="' + links[i].innerHTML + '" target="_blank">' + titles[i].innerHTML + '</a></p>')
-              }
+              var json = result.feed.entries;
+              // var links = ;
+              // var titles = $(xml).find('title');
+              json.forEach(function(d){
+                container.append('<p><a class="news-link" href="' + d.link + '" target="_blank">' + d.title + '</a></p>')
+              });
+              // for (var i = 1; i <= 3; i++) {
+              //   container.append('<p><a class="news-link" href="' + links[i].innerHTML + '" target="_blank">' + titles[i].innerHTML + '</a></p>')
+              // }
               // for (var i = 0; i < result.feed.entries.length; i++) {
               //   var entry = result.feed.entries[i];
               //   console.log(entry)
